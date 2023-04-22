@@ -20,6 +20,13 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api-auth/', include('rest_framework.urls')),
     path('user/', include('user.urls')),
+    path('authentication/', include('authentication.urls')),
+    path('auth/', include('dj_rest_auth.urls')),
+
 ]
 
 urlpatterns = [path('api/', include(urlpatterns))]
+
+
+# https://accounts.google.com/o/oauth2/v2/auth?redirect_uri=http://localhost:8000/api/authentication/dj-rest-auth/google/&prompt=consent&response_type=code&client_id=82263305240-uv4nh847703q3n1978aqjcrka1o73k63.apps.googleusercontent.com&scope=openid%20email%20profile&access_type=offline
+# https://accounts.google.com/o/oauth2/v2/auth?redirect_uri=http://localhost:8000/api/authentication/google/callback/&prompt=consent&response_type=code&client_id=82263305240-uv4nh847703q3n1978aqjcrka1o73k63.apps.googleusercontent.com&scope=openid%20email%20profile&access_type=offline

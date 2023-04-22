@@ -5,6 +5,11 @@ from rest_framework.views import APIView
 from .serializers import UserSerializer
 from rest_framework.response import Response
 from .models import User
+from django.db import connection
+
+# Your code that interacts with the database
+
+
 
 
 class CreateUserView(APIView):
@@ -23,3 +28,4 @@ class CreateUserView(APIView):
         queryset = User.objects.all()
         serializer = UserSerializer(queryset, many=True)
         return Response(serializer.data)
+

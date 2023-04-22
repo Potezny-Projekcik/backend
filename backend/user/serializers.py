@@ -8,6 +8,7 @@ class UserSerializer(serializers.ModelSerializer):
     last_name = serializers.CharField()
     login = serializers.CharField()
     birth_date = serializers.DateField()
+
     password = serializers.CharField(
         write_only=True,
         required=True,
