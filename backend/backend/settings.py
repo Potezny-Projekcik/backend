@@ -16,8 +16,6 @@ import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
-
 # ENV VARIABLES
 # db_host = os.getenv('DB_ADDR')
 # db_port = os.getenv('DB_PORT')
@@ -42,7 +40,6 @@ CORS_ALLOW_CREDENTIALS = True
 CRSF_TRUSTED_ORIGINS = [
     'http://localhost:3000'
 ]
-
 
 LOGGING = {
     'version': 1,
@@ -78,7 +75,6 @@ CORS_ALLOW_METHODS = [
     "POST",
     "PUT",
 ]
-
 
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
@@ -138,8 +134,13 @@ REST_FRAMEWORK = {
 
 AUTHENTICATION_BACKENDS = (
     # ...
-    'allauth.account.auth_backends.AuthenticationBackend',
+    'authentication.auth.AccessTokenBackend',
+    'django.contrib.auth.backends.ModelBackend',
+    # 'allauth.account.auth_backends.AuthenticationBackend',
 )
+
+
+# LOGIN_SERIALIZER = 'user.UserSerializer'
 
 REST_AUTH = {
     'USE_JWT': True,
@@ -156,17 +157,21 @@ SOCIALACCOUNT_PROVIDERS = {
         'APP': {
             'client_id': '82263305240-uv4nh847703q3n1978aqjcrka1o73k63.apps.googleusercontent.com',
             'secret': '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',
-            'key': ''
+            'key': 'AIzaSyBOEXL3ccF25iLBxwYd2ReSe8BhZ5ieTrU'
         },
         'SCOPE': [
             'profile',
             'email',
+            'https://www.googleapis.com/auth/user.birthday.read'
         ],
         # 'AUTH_PARAMS': {
         #     'access_type': 'online',
         # }
     }
 }
+
+# AUTH_USER_MODEL = 'user.User'
+
 
 ROOT_URLCONF = 'backend.urls'
 
@@ -186,8 +191,9 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'backend.wsgi.application'
+REST_SESSION_LOGIN = True
 
+WSGI_APPLICATION = 'backend.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
@@ -198,7 +204,6 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
@@ -218,7 +223,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
 
@@ -229,7 +233,6 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/

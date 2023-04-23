@@ -21,6 +21,7 @@ class User(AbstractBaseUser):
     def __str__(self):
         return self.login
 
-    @property
-    def is_staff(self):
-        return self.is_admin
+    # @property
+    # def is_staff(self):
+    #     return self.is_admin
+

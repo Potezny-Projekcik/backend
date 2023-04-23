@@ -1,61 +1,54 @@
 from allauth.socialaccount.providers.oauth2.client import OAuth2Client
-from dj_rest_auth.registration.views import SocialLoginView, LoginView
-
 from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
-from allauth.socialaccount.providers.google.views import OAuth2Error
-from google_auth_oauthlib.flow import Flow
-from rest_framework import permissions, status
+from dj_rest_auth.registration.views import SocialLoginView
 
-from rest_framework.decorators import permission_classes
-from rest_framework.response import Response
-from django.http import HttpResponse
+from django.http import JsonResponse
 import requests
-from dj_rest_auth.serializers import LoginSerializer
+from django.contrib.auth import  login
 
-from rest_framework.views import APIView
-# import chardet
 
-import jwt
 import sys
-
 sys.path.append('..')
-from user.models import User
-
-
-class CustomGoogleOAuth2Adapter(GoogleOAuth2Adapter):
-    def complete_login(self, request, app, token, response, **kwargs):
-        try:
-            identity_data = jwt.decode(
-                response["id_token"]["id_token"],  # another nested id_token was returned
-                options={
-                    "verify_signature": False,
-                    "verify_iss": True,
-                    "verify_aud": True,
-                    "verify_exp": True,
-                },
-                issuer=self.id_token_issuer,
-                audience=app.client_id,
-            )
-        except jwt.PyJWTError as e:
-            raise OAuth2Error("Invalid id_token") from e
-        login = self.get_provider().sociallogin_from_response(request, identity_data)
-        return login
+from authentication.auth import AccessTokenBackend
 
 
 class GoogleLogin(SocialLoginView):
-    adapter_class = CustomGoogleOAuth2Adapter
+    adapter_class = GoogleOAuth2Adapter
     callback_url = "http://localhost:8000/api/authentication/dj-rest-auth/google/"
     client_class = OAuth2Client
 
     def get(self, request, *args, **kwargs):
-        print(request.GET.get('code'))
-        self.request = request
-        self.serializer = self.get_serializer(data=self.request.GET)
-        self.serializer.is_valid(raise_exception=True)
 
-        self.login()
-        print(self.get_response().data['access_token'])
+        token_data = {
+            'client_id': '82263305240-uv4nh847703q3n1978aqjcrka1o73k63.apps.googleusercontent.com',
+            'client_secret': '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',
+            'code': request.GET.get('code'),
+            'grant_type': 'authorization_code',
+            'redirect_uri': self.callback_url,
+            'scope': 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/user.birthday.read',
+        }
+
+        token_response = requests.post('https://oauth2.googleapis.com/token', data=token_data)
+        if token_response.status_code != 200:
+            return JsonResponse({'error': 'Failed to obtain Google access token'}, status=400)
+
+        google_token_data = token_response.json()
+        access_token = google_token_data.get('access_token')
+        refresh_token = google_token_data.get('refresh_token')
+
+
+        if token_response.status_code == 200:
+            # Extract the user data from the response
+            user = AccessTokenBackend().authenticate(request, access_token=access_token)
+
+            # If authentication is successful, log the user in and return a success response
+            if user is not None:
+                login(request, user)
+                print(request.user.is_authenticated)
+
+                return JsonResponse({'success': True, 'access_token': access_token, 'refresh_token': refresh_token})
+            else:
+                return JsonResponse({'success': False, 'message': 'Invalid access token.'})
+
         return self.get_response()
-
-
 
