@@ -4,13 +4,17 @@ from dj_rest_auth.registration.views import SocialLoginView
 
 from django.http import JsonResponse
 import requests
-from django.contrib.auth import  login
-
+from django.contrib.auth import login, logout
 
 import sys
+
+from rest_framework.response import Response
+from rest_framework import viewsets, permissions, serializers, status
+
 sys.path.append('..')
 from authentication.auth import AccessTokenBackend
-
+from user.serializers import UserSerializer
+from user.models import User
 
 class GoogleLogin(SocialLoginView):
     adapter_class = GoogleOAuth2Adapter
@@ -30,7 +34,7 @@ class GoogleLogin(SocialLoginView):
 
         token_response = requests.post('https://oauth2.googleapis.com/token', data=token_data)
         if token_response.status_code != 200:
-            return JsonResponse({'error': 'Failed to obtain Google access token'}, status=400)
+            return Response({'error': 'Failed to obtain Google access token'}, status=400)
 
         google_token_data = token_response.json()
         access_token = google_token_data.get('access_token')
@@ -46,9 +50,70 @@ class GoogleLogin(SocialLoginView):
                 login(request, user)
                 print(request.user.is_authenticated)
 
-                return JsonResponse({'success': True, 'access_token': access_token, 'refresh_token': refresh_token})
+                return Response({'success': True, 'access_token': access_token, 'refresh_token': refresh_token})
             else:
-                return JsonResponse({'success': False, 'message': 'Invalid access token.'})
+                return Response({'success': False, 'message': 'Invalid access token.'})
 
         return self.get_response()
+
+
+from django.contrib.auth import get_user_model
+
+
+
+class LoginSerializer(serializers.Serializer):
+    login = serializers.CharField()
+    password = serializers.CharField(write_only=True)
+
+    def create(self, validated_data):
+        user = AccessTokenBackend().authenticate_username_password(
+            login=validated_data['login'],
+            password=validated_data['password']
+        )
+
+        if not user:
+            raise serializers.ValidationError('Unable to log in with provided credentials.')
+
+        return user
+
+    def validate(self, data):
+        user = self.create(data)
+
+        if not user.is_active:
+            raise serializers.ValidationError('User account is disabled.')
+
+        data['user'] = user
+        return data
+
+
+class ModelLogin(viewsets.ModelViewSet):
+    serializer_class = LoginSerializer
+    permission_classes = [permissions.AllowAny]
+
+    def get_serializer_context(self):
+        return {'request': self.request}
+
+    def login(self, request):
+        serializer = self.serializer_class(data=request.data, context=self.get_serializer_context())
+        if serializer.is_valid():
+            print(request.user.is_authenticated)
+            user = serializer.save()
+            login(request, user)
+            print(request.user.is_authenticated)
+            return Response({'status': 'Authenticated'})
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def logout(self, request):
+        print(request.user)
+        print(request.user.is_authenticated)
+        logout(request)
+        print(request.user)
+        print(request.user.is_authenticated)
+
+        return Response({'status': 'Logged out',})
+
+
+
+
 

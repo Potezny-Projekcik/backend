@@ -4,6 +4,7 @@ from rest_framework import permissions, status
 from rest_framework.views import APIView
 from .serializers import UserSerializer
 from rest_framework.response import Response
+# from rest_framework_simplejwt.authentication import JWTAuthentication
 from .models import User
 from django.db import connection
 
@@ -14,6 +15,8 @@ from django.db import connection
 
 class CreateUserView(APIView):
     permission_classes = [permissions.AllowAny]
+    # permission_classes = [permissions.IsAuthenticated]
+    # authentication_classes = [JWTAuthentication]
     serializer_class = UserSerializer
 
     def post(self, request):
@@ -29,3 +32,10 @@ class CreateUserView(APIView):
         serializer = UserSerializer(queryset, many=True)
         return Response(serializer.data)
 
+
+class TestView(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request):
+        print(request.data)
+        return Response(request.data)

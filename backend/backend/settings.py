@@ -125,6 +125,8 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated',
     ),
     'DEFAULT_AUTHENTICATION_CLASSES': (
+        # 'django.contrib.auth.backends.ModelBackend',
+        'authentication.auth.AccessTokenBackend',
         'dj_rest_auth.jwt_auth.JWTCookieAuthentication',
         "rest_framework.authentication.BasicAuthentication",
     ),
