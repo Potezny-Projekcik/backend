@@ -134,6 +134,8 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 20,
 }
 
+
+AUTH_USER_MODEL = 'user.User'
 AUTHENTICATION_BACKENDS = (
     # ...
     'authentication.auth.AccessTokenBackend',
@@ -171,8 +173,6 @@ SOCIALACCOUNT_PROVIDERS = {
         # }
     }
 }
-
-# AUTH_USER_MODEL = 'user.User'
 
 
 ROOT_URLCONF = 'backend.urls'

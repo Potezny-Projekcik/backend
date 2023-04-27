@@ -24,7 +24,7 @@ class AccessTokenBackend(BaseBackend):
             print(user_data)
             # Check if the user exists in the database
             try:
-                user = User.objects.get(login=user_data['names'][0]['displayName'])
+                user = User.objects.get(username=user_data['names'][0]['displayName'])
                 user.backend = 'authentication.auth.AccessTokenBackend'
 
             except User.DoesNotExist:
@@ -36,7 +36,7 @@ class AccessTokenBackend(BaseBackend):
                             user_birthday = f"{date['year']}-{date['month']}-{date['day']}"
 
                 user = User.objects.create_user(
-                    login=user_data['names'][0]['displayName'],
+                    username=user_data['names'][0]['displayName'],
                     first_name=user_data['names'][0]['givenName'],
                     last_name=user_data['names'][0]['familyName'],
                     birth_date=user_birthday
@@ -47,9 +47,9 @@ class AccessTokenBackend(BaseBackend):
 
         return None
 
-    def authenticate_username_password(self, login=None, password=None):
+    def authenticate_username_password(self, username=None, password=None):
         try:
-            user = User.objects.get(login=login)
+            user = User.objects.get(username=username)
         except User.DoesNotExist:
             return None
 

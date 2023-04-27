@@ -6,7 +6,7 @@ from django.contrib.auth import get_user_model
 class UserSerializer(serializers.ModelSerializer):
     first_name = serializers.CharField()
     last_name = serializers.CharField()
-    login = serializers.CharField()
+    username = serializers.CharField()
     birth_date = serializers.DateField()
 
     password = serializers.CharField(
@@ -20,7 +20,7 @@ class UserSerializer(serializers.ModelSerializer):
         # model = User
         model = get_user_model()
         fields = ['id', 'first_name', 'last_name',
-                  'login', 'password', 'birth_date']
+                  'username', 'password', 'birth_date']
 
     def create(self, validated_data):
         return User.objects.create_user(**validated_data)

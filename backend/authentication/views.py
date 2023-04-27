@@ -47,8 +47,9 @@ class GoogleLogin(SocialLoginView):
 
             # If authentication is successful, log the user in and return a success response
             if user is not None:
+                print(f'{request.user.is_authenticated} but before login')
                 login(request, user)
-                print(request.user.is_authenticated)
+                print(f'{request.user.is_authenticated} but after login')
 
                 return Response({'success': True, 'access_token': access_token, 'refresh_token': refresh_token})
             else:
@@ -62,12 +63,12 @@ from django.contrib.auth import get_user_model
 
 
 class LoginSerializer(serializers.Serializer):
-    login = serializers.CharField()
+    username = serializers.CharField()
     password = serializers.CharField(write_only=True)
 
     def create(self, validated_data):
         user = AccessTokenBackend().authenticate_username_password(
-            login=validated_data['login'],
+            username=validated_data['username'],
             password=validated_data['password']
         )
 
@@ -96,10 +97,12 @@ class ModelLogin(viewsets.ModelViewSet):
     def login(self, request):
         serializer = self.serializer_class(data=request.data, context=self.get_serializer_context())
         if serializer.is_valid():
-            print(request.user.is_authenticated)
+            print(f'{request.user.is_authenticated} but before login')
             user = serializer.save()
+            print("dupa")
             login(request, user)
-            print(request.user.is_authenticated)
+            print(request.user.__dict__)
+            print(f'{request.user.is_authenticated} but after login')
             return Response({'status': 'Authenticated'})
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
