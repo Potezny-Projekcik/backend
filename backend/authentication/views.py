@@ -15,6 +15,7 @@ sys.path.append('..')
 from authentication.auth import AccessTokenBackend
 from user.serializers import UserSerializer
 from user.models import User
+from JWT_Tokens.JWT import create_jwt_pair_for_user
 
 class GoogleLogin(SocialLoginView):
     adapter_class = GoogleOAuth2Adapter
@@ -23,6 +24,7 @@ class GoogleLogin(SocialLoginView):
 
     def get(self, request, *args, **kwargs):
 
+        print(request.GET.get('code'))
         token_data = {
             'client_id': '82263305240-uv4nh847703q3n1978aqjcrka1o73k63.apps.googleusercontent.com',
             'client_secret': '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',
@@ -51,7 +53,7 @@ class GoogleLogin(SocialLoginView):
                 login(request, user)
                 print(f'{request.user.is_authenticated} but after login')
 
-                return Response({'success': True, 'access_token': access_token, 'refresh_token': refresh_token})
+                return Response(create_jwt_pair_for_user(user))
             else:
                 return Response({'success': False, 'message': 'Invalid access token.'})
 

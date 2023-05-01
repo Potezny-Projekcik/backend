@@ -22,6 +22,7 @@ urlpatterns = [
     path('user/', include('user.urls')),
     path('authentication/', include('authentication.urls')),
     path('auth/', include('dj_rest_auth.urls')),
+    path('jwt/', include('JWT_Tokens.urls')),
 
 ]
 

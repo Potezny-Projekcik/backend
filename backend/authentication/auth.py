@@ -4,6 +4,7 @@ from django.contrib.auth.backends import BaseBackend
 import sys
 sys.path.append('..')
 from user.models import User
+from JWT_Tokens.JWT import create_jwt_pair_for_user
 
 class AccessTokenBackend(BaseBackend):
     def authenticate(self, request, access_token=None):
@@ -43,8 +44,8 @@ class AccessTokenBackend(BaseBackend):
                 )
 
             if user is not None:
+                # return user
                 return user
-
         return None
 
     def authenticate_username_password(self, username=None, password=None):
