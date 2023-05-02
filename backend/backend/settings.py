@@ -130,7 +130,6 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated',
     ),
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        # 'authentication.auth.AccessTokenBackend',
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
@@ -155,8 +154,10 @@ SIMPLE_JWT = {
 
     "AUTH_HEADER_TYPES": ("Bearer",),
     "AUTH_HEADER_NAME": "HTTP_AUTHORIZATION",
-    "USER_ID_FIELD": "id",
-    "USER_ID_CLAIM": "user_id",
+    # "USER_ID_FIELD": "id",
+    "USER_ID_FIELD": "first_name",
+    # "USER_ID_CLAIM": "user_id",
+    "USER_ID_CLAIM": "username",
     "USER_AUTHENTICATION_RULE": "rest_framework_simplejwt.authentication.default_user_authentication_rule",
 
     "AUTH_TOKEN_CLASSES": ("rest_framework_simplejwt.tokens.AccessToken",),
@@ -169,7 +170,6 @@ SIMPLE_JWT = {
     "SLIDING_TOKEN_LIFETIME": timedelta(minutes=50),
     "SLIDING_TOKEN_REFRESH_LIFETIME": timedelta(days=1),
 
-    # "TOKEN_OBTAIN_SERIALIZER": "rest_framework_simplejwt.serializers.TokenObtainPairSerializer",
     "TOKEN_OBTAIN_SERIALIZER": "rest_framework_simplejwt.serializers.MyTokenObtainPairSerializer",
     "TOKEN_REFRESH_SERIALIZER": "rest_framework_simplejwt.serializers.TokenRefreshSerializer",
     "TOKEN_VERIFY_SERIALIZER": "rest_framework_simplejwt.serializers.TokenVerifySerializer",
@@ -181,21 +181,10 @@ SIMPLE_JWT = {
 
 AUTH_USER_MODEL = 'user.User'
 AUTHENTICATION_BACKENDS = (
-    # ...
     'authentication.auth.AccessTokenBackend',
     'django.contrib.auth.backends.ModelBackend',
-    # 'allauth.account.auth_backends.AuthenticationBackend',
 )
 
-
-# LOGIN_SERIALIZER = 'user.UserSerializer'
-
-# REST_AUTH = {
-#     'USE_JWT': True,
-#     'JWT_AUTH_COOKIE': 'my-app-auth',
-#     'JWT_AUTH_REFRESH_COOKIE': 'my-refresh-token',
-#     'JWT_AUTH_HTTPONLY': False,
-# }
 
 SITE_ID = 1
 ACCOUNT_EMAIL_VERIFICATION = 'none'
