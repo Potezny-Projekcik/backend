@@ -29,5 +29,4 @@ urlpatterns = [
 urlpatterns = [path('api/', include(urlpatterns))]
 
 
-# https://accounts.google.com/o/oauth2/v2/auth?redirect_uri=http://localhost:8000/api/authentication/dj-rest-auth/google/&prompt=consent&response_type=code&client_id=82263305240-uv4nh847703q3n1978aqjcrka1o73k63.apps.googleusercontent.com&scope=openid%20email%20profile%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuser.birthday.read&access_type=offline
-# https://accounts.google.com/o/oauth2/v2/auth?redirect_uri=http://localhost:8000/api/authentication/google/callback/&prompt=consent&response_type=code&client_id=82263305240-uv4nh847703q3n1978aqjcrka1o73k63.apps.googleusercontent.com&scope=openid%20email%20profile&access_type=offline
+# https://accounts.google.com/o/oauth2/v2/auth/oauthchooseaccount?redirect_uri=http%3A%2F%2Flocalhost%3A8000%2Fapi%2Fauthentication%2Fdj-rest-auth%2Fgoogle%2F&prompt=consent&response_type=code&client_id=82263305240-uv4nh847703q3n1978aqjcrka1o73k63.apps.googleusercontent.com&scope=openid%20email%20profile%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuser.birthday.read&access_type=offline&service=lso&o2v=2&flowName=GeneralOAuthFlow
