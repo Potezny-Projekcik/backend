@@ -1,12 +1,12 @@
 from django.contrib.auth.models import  BaseUserManager
 
 class CustomUserManager(BaseUserManager):
-    def create_user(self, login, first_name, last_name, password=None, birth_date=None):
-        if not login:
+    def create_user(self, username, first_name, last_name, password=None, birth_date=None):
+        if not username:
             raise ValueError('Użytkownik musi mieć login.')
 
         user = self.model(
-            login=login,
+            username=username,
             birth_date=birth_date,
             first_name=first_name,
             last_name=last_name,

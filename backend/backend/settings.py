@@ -78,9 +78,9 @@ CORS_ALLOW_METHODS = [
     "PUT",
 ]
 
-AUTHENTICATION_BACKENDS = [
-    'django.contrib.auth.backends.ModelBackend',
-]
+# AUTHENTICATION_BACKENDS = [
+#     'django.contrib.auth.backends.ModelBackend',
+# ]
 
 # Application definition
 
@@ -182,7 +182,7 @@ SIMPLE_JWT = {
 AUTH_USER_MODEL = 'user.User'
 AUTHENTICATION_BACKENDS = (
     'authentication.auth.AccessTokenBackend',
-    'django.contrib.auth.backends.ModelBackend',
+    # 'django.contrib.auth.backends.ModelBackend',
 )
 
 
