@@ -15,6 +15,26 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+# from rest_framework import routers
+# from .views import (
+#     CategoryViewSet, DirectorViewSet, DirectorsViewSet,
+#     LanguageViewSet, LanguagesViewSet, MovieViewSet,
+#     MovieCategoryViewSet, ProducerViewSet, ProducersViewSet,
+#     UserViewSet, UserMoviesViewSet
+# )
+
+# router = routers.DefaultRouter()
+# router.register('category', CategoryViewSet)
+# router.register('director', DirectorViewSet)
+# router.register('directors', DirectorsViewSet)
+# router.register('language', LanguageViewSet)
+# router.register('languages', LanguagesViewSet)
+# router.register('movie', MovieViewSet)
+# router.register('moviecategory', MovieCategoryViewSet)
+# router.register('producer', ProducerViewSet)
+# router.register('producers', ProducersViewSet)
+# router.register('user', UserViewSet)
+# router.register('usermovies', UserMoviesViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -23,6 +43,8 @@ urlpatterns = [
     path('authentication/', include('authentication.urls')),
     path('auth/', include('dj_rest_auth.urls')),
     path('jwt/', include('JWT_Tokens.urls')),
+    # path('', include(router.urls)),
+    path('', include('movies.urls')),
 
 ]
 

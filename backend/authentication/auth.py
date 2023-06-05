@@ -3,7 +3,8 @@ from django.contrib.auth.backends import BaseBackend
 
 import sys
 sys.path.append('..')
-from user.models import User
+# from backend.models import User
+from movies.models import User
 
 class AccessTokenBackend(BaseBackend):
     def authenticate_google_provider(self, request, access_token=None):
@@ -19,7 +20,8 @@ class AccessTokenBackend(BaseBackend):
         if response.status_code == 200:
             user_data = response.json()
             try:
-                user = User.objects.get(username=user_data['names'][0]['displayName'])
+                username=user_data['names'][0]['displayName'][:32]
+                user = User.objects.get(username=username)
                 user.backend = 'authentication.auth.AccessTokenBackend'
 
             except User.DoesNotExist:
@@ -29,11 +31,13 @@ class AccessTokenBackend(BaseBackend):
                             date = birthday['date']
                             user_birthday = f"{date['year']}-{date['month']}-{date['day']}"
 
+                print(user_data['names'][0]['displayName'])
+                username=user_data['names'][0]['displayName'].replace(' ', '')[:32]
                 user = User.objects.create_user(
-                    username=user_data['names'][0]['displayName'],
-                    first_name=user_data['names'][0]['givenName'],
-                    last_name=user_data['names'][0]['familyName'],
-                    birth_date=user_birthday
+                    username=username,
+                    firstname=user_data['names'][0]['givenName'],
+                    lastname=user_data['names'][0]['familyName'],
+                    birthdate=user_birthday
                 )
 
             if user is not None:
