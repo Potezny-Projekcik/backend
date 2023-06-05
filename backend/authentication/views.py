@@ -57,7 +57,11 @@ class ModelLogin(viewsets.ModelViewSet):
         return {'request': self.request}
 
     def login(self, request):
+        print(request.data)
+
         serializer = self.serializer_class(data=request.data, context=self.get_serializer_context())
+
+        print("in login")
         if serializer.is_valid():
             print(f'{request.user.is_authenticated} but before login')
             user = serializer.save()

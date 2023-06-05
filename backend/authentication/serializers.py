@@ -24,9 +24,12 @@ class LoginSerializer(serializers.Serializer):
 
     def validate(self, data):
         user = self.create(data)
-
+        print('user in validate')
+        print(user)
         if not user.is_active:
+            print("not active")
             raise serializers.ValidationError('User account is disabled.')
 
         data['user'] = user
+        print(data)
         return data

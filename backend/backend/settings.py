@@ -128,6 +128,7 @@ MIDDLEWARE = [
 ]
 
 REST_FRAMEWORK = {
+    # "DATETIME_FORMAT": "%m/%d/%Y - %I:%M:%S %p",
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.AllowAny',
         # 'rest_framework.permissions.IsAuthenticated',

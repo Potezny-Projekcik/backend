@@ -61,12 +61,10 @@ class ProducersSerializer(serializers.ModelSerializer):
         model = Producers
         fields = '__all__'
 
-
 class UserSerializer(serializers.ModelSerializer):
     firstname = serializers.CharField()
     lastname = serializers.CharField()
     username = serializers.CharField()
-    # login = serializers.CharField()
     birthdate = serializers.DateField()
     isadmin = serializers.BooleanField()
 
@@ -76,7 +74,6 @@ class UserSerializer(serializers.ModelSerializer):
         help_text='Leave empty if no change needed',
         style={'input_type': 'password', 'placeholder': 'Password'}
     )
-
     class Meta:
         # model = User
         model = get_user_model()

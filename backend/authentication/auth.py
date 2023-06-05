@@ -1,10 +1,19 @@
 import requests
+from django.contrib.auth import authenticate
 from django.contrib.auth.backends import BaseBackend
 
 import sys
+
+from django.contrib.auth.hashers import check_password
+
 sys.path.append('..')
 # from backend.models import User
 from movies.models import User
+import hashlib
+from django.contrib.auth.hashers import make_password, check_password
+
+
+
 
 class AccessTokenBackend(BaseBackend):
     def authenticate_google_provider(self, request, access_token=None):
@@ -44,18 +53,60 @@ class AccessTokenBackend(BaseBackend):
                 return user
         return None
 
-
     def authenticate_username_password(self, username=None, password=None):
-        try:
-            user = User.objects.get(username=username)
-        except User.DoesNotExist:
+        if username is None or password is None:
+            print("Username or password not provided")
             return None
 
-        if user.check_password(password):
-            user.backend = 'authentication.auth.AccessTokenBackend'
-            return user
+        hashed_password_from_db = "pbkdf2_sha256$390000$LECMuaeRd6UIhxCMhqMuSi$DX0iib26Pry4ruLOKCxKsALAIpX7FOnWSNn/UGl+gmg="
+        provided_password = "kek"
 
-        return None
+        # Hash the provided password with the same method, salt and iterations
+        hashed_provided_password = make_password(provided_password, salt='LECMuaeRd6UIhxCMhqMuSi',
+                                                 hasher='pbkdf2_sha256')
+
+        print("Hashed provided password:", hashed_provided_password)
+
+        # Compare the two hashed passwords
+        print("Passwords match:", hashed_password_from_db == hashed_provided_password)
+
+        # Or use check_password
+        print("check_password result:", check_password(provided_password, hashed_password_from_db))
+
+
+        try:
+            print("In authenticate")
+            user = User.objects.get(username=username)
+            print(f"User: {user}")
+
+        except User.DoesNotExist:
+            print("User does not exist")
+            return None
+
+        print("check_password result:", check_password(password.replace(" ", ""), user.password.replace(" ", "")))
+
+
+        user.backend = 'django.contrib.auth.backends.ModelBackend'
+
+        if check_password(password.replace(" ", ""), user.password.replace(" ", "")):
+            print("Password is correct")
+            return user
+        else:
+            print(f"Password is incorrect. Hashed password: {user.password}, provided password: {password}")
+            return None
+
+    # def authenticate_username_password(self, username=None, password=None):
+    #     try:
+    #         user = User.objects.get(username=username)
+    #     except User.DoesNotExist:
+    #         return None
+    #
+    #     if check_password(password, user.password):
+    #         user.backend = 'authentication.auth.AccessTokenBackend'
+    #         return user
+    #
+    #     return None
+
 
     def authenticate_header(self, request):
         return 'Bearer realm="api", charset="UTF-8"'

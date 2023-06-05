@@ -100,6 +100,7 @@ class Producers(models.Model):
 
 
 class User(AbstractBaseUser):
+
     userid = models.AutoField(primary_key=True)
     username = models.CharField(max_length=64, unique=True, verbose_name='login')
     # login = models.CharField(max_length=64, unique=True, verbose_name='log')
@@ -107,7 +108,6 @@ class User(AbstractBaseUser):
     lastname = models.CharField(max_length=64, verbose_name='last name')
     birthdate = models.DateField()
 
-    # last_login = models.DateField()
     isadmin = models.BooleanField()
 
     objects = CustomUserManager()

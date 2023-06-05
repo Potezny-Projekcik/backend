@@ -1,7 +1,7 @@
 from django.contrib.auth.models import  BaseUserManager
 
 class CustomUserManager(BaseUserManager):
-    def create_user(self, username, firstname, lastname, password=None, birthdate=None,
+    def create_user(self, username, firstname, lastname, password=None, birthdate=None, last_login=None,
                     isadmin=False):
         if not username:
             raise ValueError('Użytkownik musi mieć login.')
@@ -9,6 +9,7 @@ class CustomUserManager(BaseUserManager):
         user = self.model(
             username=username,
             # login=username,
+            last_login=last_login,
             birthdate=birthdate,
             firstname=firstname,
             lastname=lastname,
