@@ -7,8 +7,7 @@ CREATE TABLE IF NOT EXISTS "User" (
   "userid" SERIAL PRIMARY KEY,
   "firstname" VARCHAR(45) NOT NULL,
   "lastname" VARCHAR(45) NOT NULL,
-  "login" VARCHAR(45) NOT NULL,
-  "password" CHAR(32) NOT NULL,
+  "password" CHAR(128) NOT NULL,
   "birthdate" DATE NOT NULL,
   "isadmin" BOOLEAN NOT NULL DEFAULT false
 );
