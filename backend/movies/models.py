@@ -72,6 +72,7 @@ class Movie(models.Model):
 
 
 class Moviecategory(models.Model):
+    moviecategoryid = models.AutoField(primary_key=True)
     usermovieid = models.ForeignKey('Usermovies', models.DO_NOTHING, db_column='usermovieid')
     categoryid = models.ForeignKey(Category, models.DO_NOTHING, db_column='categoryid')
 

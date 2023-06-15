@@ -11,6 +11,8 @@ CREATE TABLE IF NOT EXISTS "User" (
   "birthdate" DATE NOT NULL,
   "isadmin" BOOLEAN NOT NULL DEFAULT false
 );
+ALTER TABLE "User" ADD COLUMN "last_login" timestamp with time zone;
+ALTER TABLE "User" ADD COLUMN "username" varchar(150);
 
 -- Table: Category
 CREATE TABLE IF NOT EXISTS "Category" (
@@ -139,7 +141,7 @@ INSERT INTO "Category" ("categoryname")
 VALUES
     ('Do piwa'),
     ('Na randewu'),
-    ('Dupa');
+    ('Z ziomusiami');
 
 INSERT INTO "MovieCategory" ("usermovieid", "categoryid")
 VALUES
@@ -255,24 +257,66 @@ FROM
   INNER JOIN "UserMovies" um ON mc.usermovieid = um.usermovieid
   INNER JOIN "User" u ON um.userid = u.userid;
 
+CREATE OR REPLACE VIEW UncategorizedUserMoviesByCategory AS
+SELECT
+  NULL AS categoryid,
+  um.usermovieid,
+  m.title,
+  m.genre,
+  m.countryoforigin,
+  m.productionyear,
+  m.suggestedage,
+  d.directorfirstname,
+  d.directorlastname,
+  p.producername,
+  l.languagename
+FROM
+  "UserMovies" um
+  INNER JOIN "Movie" m ON um.movieid = m.movieid
+  LEFT JOIN "Directors" dm ON dm.movieid = m.movieid
+  LEFT JOIN "Director" d ON d.directorid = dm.directorid
+  LEFT JOIN "Producers" pm ON pm.movieid = m.movieid
+  LEFT JOIN "Producer" p ON p.producerid = pm.producerid
+  LEFT JOIN "Languages" lm ON lm.movieid = m.movieid
+  LEFT JOIN "Language" l ON l.languageid = lm.languageid
+WHERE
+  um.usermovieid NOT IN (
+    SELECT usermovieid
+    FROM "MovieCategory"
+  );
 
-CREATE OR REPLACE FUNCTION check_duplicate_movie()
+
+CREATE TRIGGER enforce_user_access_control_trigger
+BEFORE DELETE OR UPDATE ON "User"
+FOR EACH ROW
+EXECUTE FUNCTION enforce_user_access_control();
+
+
+CREATE OR REPLACE FUNCTION prevent_duplicate_movies()
 RETURNS TRIGGER AS $$
 BEGIN
   IF EXISTS (
     SELECT 1
     FROM "Movie"
-    WHERE "title" = NEW."title" AND "productionyear" = NEW."productionyear"
+    WHERE title = NEW.title AND EXISTS (
+      SELECT 1
+      FROM "Producers" p
+      WHERE p.movieid = NEW.movieid AND p.producerid IN (
+        SELECT producerid
+        FROM "Producers"
+        WHERE movieid <> NEW.movieid
+      )
+    )
   ) THEN
-    RAISE EXCEPTION 'A movie with the same title and production year already exists.';
+    RAISE EXCEPTION 'A movie with the same title and producer already exists in the database.';
   END IF;
+  
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER prevent_duplicate_movie
-BEFORE INSERT OR UPDATE ON "Movie"
+CREATE TRIGGER prevent_duplicate_movies_trigger
+BEFORE INSERT ON "Movie"
 FOR EACH ROW
-EXECUTE FUNCTION check_duplicate_movie();
-
+EXECUTE FUNCTION prevent_duplicate_movies();
 
